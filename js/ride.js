@@ -19,10 +19,10 @@ let map;
 
     //  requestUnicorn
     //      make the POST request to the server
-    function requestUnicorn(pickupLocation) {
+    function requestUnicorn(pickupLocation) {       //      !!!! 2
         $.ajax({
             method: 'POST',
-            url: _config.api.invokeUrl + '/ride',
+            url: _config.api.invokeUrl + '/ride',   //      !!!! 3 check out API Gateway
             headers: {
                 Authorization: authToken
             },
@@ -44,7 +44,7 @@ let map;
 
     //  completeRequest
     //      a Unicorn has been dispatched to your location
-    function completeRequest(result, pickupLocation) {
+    function completeRequest(result, pickupLocation) {          //  !!!!! 4 request accepted
         var unicorn;
         var pronoun;
 
@@ -54,7 +54,7 @@ let map;
         displayUpdate(unicorn.Name + ', your ' + unicorn.Color + ' unicorn, is on ' + pronoun + ' way.', unicorn.Color);
 
         console.log(pickupLocation);
-        addSomeSizzle(pickupLocation);
+        addSomeSizzle(pickupLocation);                          //  !!!! 5 now what
         //  get the local weather, find nearby restaurants, movies
         // getWeather(pickupLocation, unicorn)
 
@@ -67,14 +67,14 @@ let map;
         });
     }
 
-function addSomeSizzle(loc) {
+function addSomeSizzle(loc) {                           //      !!!! 6
     let sizzle = document.querySelector("#sizzle").value;
     let search = sizzle.substring(sizzle.indexOf(':')+1);
     sizzle = sizzle.substring(0,  sizzle.indexOf(':'));
     switch (sizzle) {
-        case "weather"  :   weather(search, loc);   break;
-        case "apod"     :   NASA(search);           break;
-        case "movies"   :   movies(search);         break;
+        case "weather"  :   weather(search, loc);   break;      //  weather:cityName
+        case "apod"     :   NASA(search);           break;      //  apos:date
+        case "movies"   :   movies(search);         break;      //  movies:title
     }
 }
 
@@ -117,9 +117,6 @@ function weather (cityName, loc) {
 function NASA (date) {
     let url = 'https://api.nasa.gov/planetary/apod?api_key=Aw0TZ7aE7e6WJnh4t7plOXEk1xdbCg45NMqfUX42';
 
-    // if (queryDate.value.length > 0) {
-    //     url += '&date=' + queryDate.value;
-    // }
     if (date.length > 0)    url += `&date=${date}`;
     fetch(url)
     .then(response => response.json())  //  wait for the response and convert it to JSON
@@ -147,12 +144,8 @@ function movies(title) {
     .then(movies => {
         let innerHTML = "";
 
-        //  there is a little bit of data with this API not much.
         //  if you want more details click on the movie image
         for (let movie of movies.Search) {
-            //  let's build a nice card for each movie
-            //  this is a GREAT opportunity to Reactify this code. But for now I will keep it simple
-            //        movie id will be used for the listener
             innerHTML +=
                 `<div class="grid-item">
                     <a href="https://www.imdb.com/title/${movie.imdbID}"><h5>${movie.Title}</h5></a>
@@ -247,7 +240,7 @@ $(function onDocReady() {
         var pickupLocation =  WildRydes.map.selectedPoint;
 
         event.preventDefault();
-        requestUnicorn(pickupLocation);
+        requestUnicorn(pickupLocation);         //      !!!!! 1
     }
 
     //  animateArrival
