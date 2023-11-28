@@ -78,16 +78,13 @@ function addSomeSizzle(loc) {
     }
 }
 
-
-https://api.openweathermap.org/data/2.5/forecast?q=Denton&exclude=minutely,hourly,daily,alerts&appid=a099a51a6362902523bbf6495a0818aa
-
 function weather (cityName, loc) {
     let url;
 
     if (cityName.length > 0)
-        url = `https://api.openweathermap.org/data/2.5/weather?appid=a099a51a6362902523bbf6495a0818aa&q=${cityName}`;
+        url = `https://api.openweathermap.org/data/2.5/weather?appid=a099a51a6362902523bbf6495a0818aa&units=imperial&q=${cityName}`;
     else
-        url = `https://api.openweathermap.org/data/2.5/onecall?appid=a099a51a6362902523bbf6495a0818aa&lat=${loc.latitude}&lon=${loc.longitude}&exclude=minutely,hourly,daily,alerts`;
+        url = `https://api.openweathermap.org/data/2.5/onecall?appid=a099a51a6362902523bbf6495a0818aa&units=imperial&lat=${loc.latitude}&lon=${loc.longitude}&exclude=minutely,hourly,daily,alerts`;
     fetch(url)
         .then(resp => resp.json())
         .then(weather => {
@@ -95,10 +92,10 @@ function weather (cityName, loc) {
                 let cityWX = weather.main;
                 displayUpdate(
                 `<div class="grid-item">
-                    <h3>Date: ${niceTime(weather.dt, weather.timezone)}</h3>
-                    <p>Temp: ${KtoF(cityWX.temp)}</h3>
+                    <h4>Date: ${niceTime(weather.dt, weather.timezone)}</h4>
+                    <p>Temp: ${cityWX.temp}</h3>
                     <p>Forecast: <img src='https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png' alt=""> ${weather.weather[0].description}</p>
-                    <p>Humidity ${cityWX.humidity}% Feels Like ${KtoF(cityWX.feels_like)}</p>
+                    <p>Humidity ${cityWX.humidity}% Feels Like ${cityWX.feels_like}</p>
                     <p>Wind at ${weather.wind.speed} mph out of the ${weather.wind.deg}</p>
                     <p>Sunrise: ${niceTime(weather.sys.sunrise, weather.timezone)} / Sunset: ${niceTime(weather.sys.sunset, weather.timezone)}</p>
                     </div>`,"lightgray");
@@ -106,10 +103,10 @@ function weather (cityName, loc) {
                 let wx = weather.current;
                 displayUpdate(
                 `<div class="grid-item">
-                    <h3>Date: ${niceTime(wx.dt, weather.timezone_offset)}</h3>
-                    <p>Temp: ${KtoF(wx.temp)}</h3>
+                    <h4>Date: ${niceTime(wx.dt, weather.timezone_offset)}</h4>
+                    <p>Temp: ${wx.temp}</h3>
                     <p>Forecast: <img src='https://openweathermap.org/img/wn/${wx.weather[0].icon}@2x.png' alt=""> ${wx.weather[0].description}</p>
-                    <p>Humidity ${wx.humidity}% Feels Like ${KtoF(wx.feels_like)}</p>
+                    <p>Humidity ${wx.humidity}% Feels Like ${wx.feels_like}</p>
                     <p>Wind at ${wx.wind_speed} mph out of the ${wx.wind_deg}</p>
                     <p>Sunrise: ${niceTime(wx.sunrise, wx.timezone_offset)} / Sunset: ${niceTime(wx.sunset, wx.timezone_offset)}</p>
                 </div>`,"lightblue");
@@ -135,7 +132,7 @@ function NASA (date) {
         displayUpdate(
             `<div class="grid-item">
             <h3>Date: ${apod.date}</h3>
-            <h5>Date: ${apod.title}</h3>
+            <h5>Title: ${apod.title}</h3>
             <p>${media}</h3>
             <p>${apod.explanation}</p>
             </div>`,"lightyellow");
@@ -174,14 +171,9 @@ function niceTime(dateTime, offset) {
     return time;
 }
     
-    //  Convert Kelvin to Fahrenheit
-function KtoF(temp) {
-    return ((temp-273) * 9 / 5 + 32).toFixed(0);
-}
-    
-    // Register click handler for #request button
-    $(function onDocReady() {
-        $('#request').click(handleRequestClick);
+// Register click handler for #request button
+$(function onDocReady() {
+    $('#request').click(handleRequestClick);
 
         WildRydes.authToken.then(function updateAuthMessage(token) {
             if (token) {
