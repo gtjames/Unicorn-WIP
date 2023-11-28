@@ -54,6 +54,7 @@ let map;
         displayUpdate(unicorn.Name + ', your ' + unicorn.Color + ' unicorn, is on ' + pronoun + ' way.', unicorn.Color);
 
         console.log(pickupLocation);
+        addSomeSizzle(pickupLocation);
         //  get the local weather, find nearby restaurants, movies
         // getWeather(pickupLocation, unicorn)
 
@@ -66,6 +67,96 @@ let map;
         });
     }
 
+    function addSomeSizzle(loc) {
+        let sizzle = document.querySelector("#sizzle").value;
+        let search = sizzle.substring(sizzle.indexOf(':')+1);
+        sizzle = sizzle.substring(0,  sizzle.indexOf(':'));
+        switch (sizzle) {
+            case "weather"  :   weather(loc);       break;
+            case "apod"     :   NASA(search);       break;
+            case "movies"   :   movies(search);     break;
+        }
+    }
+
+    function weather (loc) {
+        let url =`https://api.openweathermap.org/data/2.5/onecall?lat=${loc.latitude}&lon=${loc.longitude}&exclude=minutely,hourly,daily,alerts&appid=a099a51a6362902523bbf6495a0818aa`;
+        fetch(url)
+            .then(resp => resp.json())
+            .then(weather => {
+                let wx = weather.current;
+                document.querySelector("#search");
+                displayUpdate(
+            `<div class="grid-item">
+                <h3>Date: ${niceTime(wx.dt, weather.timezone_offset)}</h3>
+                <p>Temp: ${KtoF(wx.temp)}</h3>
+                <p>Forecast: <img src='http://openweathermap.org/img/wn/${wx.weather[0].icon}@2x.png' alt=""> ${wx.weather[0].description}</p>
+                <p>Humidity ${wx.humidity}% Feels Like ${KtoF(wx.feels_like)}</p>
+                <p>Wind at ${wx.wind_speed} mph out of the ${wx.wind_deg}</p>
+                <p>Sunrise: ${niceTime(wx.sunrise, wx.timezone_offset)} / Sunset: ${niceTime(wx.sunset, wx.timezone_offset)}</p>
+                </div>`,"lightblue");
+        });
+    }
+function NASA (date) {
+    let url = 'https://api.nasa.gov/planetary/apod?api_key=Aw0TZ7aE7e6WJnh4t7plOXEk1xdbCg45NMqfUX42';
+
+    // if (queryDate.value.length > 0) {
+    //     url += '&date=' + queryDate.value;
+    // }
+    fetch(url)
+    .then(response => response.json())  //  wait for the response and convert it to JSON
+    .then(apod => {                     //  with the resulting JSON data do something
+        let media;
+        if (apod.media_type === 'image') 
+            media = `<img src="${apod.hdurl}" height="100px" alt="">`;
+        else
+            media = `<iframe width="960" height="540" src="${apod.url}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>`;
+        displayUpdate(
+            `<div class="grid-item">
+            <h3>Date: ${apod.date}</h3>
+            <h5>Date: ${apod.title}</h3>
+            <p>${media}</h3>
+            <p>${apod.explanation}</p>
+            </div>`,"lightblue");
+    });
+}
+
+function movies(title) {
+    let url = `http://www.omdbapi.com/?s=${title}&apikey=2c791b47`;
+
+    fetch(url)
+    .then(response => response.json())
+    .then(movies => {
+        let innerHTML = "";
+
+        //  there is a little bit of data with this API not much.
+        //  if you want more details click on the movie image
+        for (let movie of movies.Search) {
+            //  let's build a nice card for each movie
+            //  this is a GREAT opportunity to Reactify this code. But for now I will keep it simple
+            //        movie id will be used for the listener
+            innerHTML +=
+                `<div class="grid-item">
+                    <a href="https://www.imdb.com/title/${movie.imdbID}"><h5>${movie.Title}</h5></a>
+                    <img src='${movie.Poster}' height="100px" alt="">
+                </div>`;
+        }
+        displayUpdate(`<div class="grid-item"> ${innerHTML} </div>`,"lightblue");
+    });
+}
+
+function niceTime(dateTime, offset) {
+    let day = new Date(dateTime * 1000 + offset).toLocaleString();
+    let hour = day.indexOf(' ') + 1;
+    let time = day.substring(hour);
+    time = time.substring(0, time.lastIndexOf(':')) + time.substring(time.length-3)
+    return time;
+}
+    
+    //  Convert Kelvin to Fahrenheit
+function KtoF(temp) {
+    return ((temp-273) * 9 / 5 + 32).toFixed(0);
+}
+    
     // Register click handler for #request button
     $(function onDocReady() {
         $('#request').click(handleRequestClick);
