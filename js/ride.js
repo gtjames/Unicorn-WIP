@@ -67,41 +67,63 @@ let map;
         });
     }
 
-    function addSomeSizzle(loc) {
-        let sizzle = document.querySelector("#sizzle").value;
-        let search = sizzle.substring(sizzle.indexOf(':')+1);
-        sizzle = sizzle.substring(0,  sizzle.indexOf(':'));
-        switch (sizzle) {
-            case "weather"  :   weather(loc);       break;
-            case "apod"     :   NASA(search);       break;
-            case "movies"   :   movies(search);     break;
-        }
+function addSomeSizzle(loc) {
+    let sizzle = document.querySelector("#sizzle").value;
+    let search = sizzle.substring(sizzle.indexOf(':')+1);
+    sizzle = sizzle.substring(0,  sizzle.indexOf(':'));
+    switch (sizzle) {
+        case "weather"  :   weather(search, loc);   break;
+        case "apod"     :   NASA(search);           break;
+        case "movies"   :   movies(search);         break;
     }
+}
 
-    function weather (loc) {
-        let url =`https://api.openweathermap.org/data/2.5/onecall?lat=${loc.latitude}&lon=${loc.longitude}&exclude=minutely,hourly,daily,alerts&appid=a099a51a6362902523bbf6495a0818aa`;
-        fetch(url)
-            .then(resp => resp.json())
-            .then(weather => {
-                let wx = weather.current;
-                document.querySelector("#search");
+
+https://api.openweathermap.org/data/2.5/forecast?q=Denton&exclude=minutely,hourly,daily,alerts&appid=a099a51a6362902523bbf6495a0818aa
+
+function weather (cityName, loc) {
+    let url;
+
+    if (cityName.length > 0)
+        url = `https://api.openweathermap.org/data/2.5/weather?appid=a099a51a6362902523bbf6495a0818aa&q=${cityName}`;
+    else
+        url = `https://api.openweathermap.org/data/2.5/onecall?appid=a099a51a6362902523bbf6495a0818aa&lat=${loc.latitude}&lon=${loc.longitude}&exclude=minutely,hourly,daily,alerts`;
+    fetch(url)
+        .then(resp => resp.json())
+        .then(weather => {
+            if (cityName.length > 0) {
+                let cityWX = weather.main;
                 displayUpdate(
-            `<div class="grid-item">
-                <h3>Date: ${niceTime(wx.dt, weather.timezone_offset)}</h3>
-                <p>Temp: ${KtoF(wx.temp)}</h3>
-                <p>Forecast: <img src='https://openweathermap.org/img/wn/${wx.weather[0].icon}@2x.png' alt=""> ${wx.weather[0].description}</p>
-                <p>Humidity ${wx.humidity}% Feels Like ${KtoF(wx.feels_like)}</p>
-                <p>Wind at ${wx.wind_speed} mph out of the ${wx.wind_deg}</p>
-                <p>Sunrise: ${niceTime(wx.sunrise, wx.timezone_offset)} / Sunset: ${niceTime(wx.sunset, wx.timezone_offset)}</p>
+                `<div class="grid-item">
+                    <h3>Date: ${niceTime(weather.dt, weather.timezone)}</h3>
+                    <p>Temp: ${KtoF(cityWX.temp)}</h3>
+                    <p>Forecast: <img src='https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png' alt=""> ${weather.weather[0].description}</p>
+                    <p>Humidity ${cityWX.humidity}% Feels Like ${KtoF(cityWX.feels_like)}</p>
+                    <p>Wind at ${weather.wind.speed} mph out of the ${weather.wind.deg}</p>
+                    <p>Sunrise: ${niceTime(weather.sys.sunrise, weather.timezone)} / Sunset: ${niceTime(weather.sys.sunset, weather.timezone)}</p>
+                    </div>`,"lightgray");
+            } else {
+                let wx = weather.current;
+                displayUpdate(
+                `<div class="grid-item">
+                    <h3>Date: ${niceTime(wx.dt, weather.timezone_offset)}</h3>
+                    <p>Temp: ${KtoF(wx.temp)}</h3>
+                    <p>Forecast: <img src='https://openweathermap.org/img/wn/${wx.weather[0].icon}@2x.png' alt=""> ${wx.weather[0].description}</p>
+                    <p>Humidity ${wx.humidity}% Feels Like ${KtoF(wx.feels_like)}</p>
+                    <p>Wind at ${wx.wind_speed} mph out of the ${wx.wind_deg}</p>
+                    <p>Sunrise: ${niceTime(wx.sunrise, wx.timezone_offset)} / Sunset: ${niceTime(wx.sunset, wx.timezone_offset)}</p>
                 </div>`,"lightblue");
-        });
-    }
+            }
+    });
+}
+
 function NASA (date) {
     let url = 'https://api.nasa.gov/planetary/apod?api_key=Aw0TZ7aE7e6WJnh4t7plOXEk1xdbCg45NMqfUX42';
 
     // if (queryDate.value.length > 0) {
     //     url += '&date=' + queryDate.value;
     // }
+    if (date.length > 0)    url += `&date=${date}`;
     fetch(url)
     .then(response => response.json())  //  wait for the response and convert it to JSON
     .then(apod => {                     //  with the resulting JSON data do something
@@ -116,7 +138,7 @@ function NASA (date) {
             <h5>Date: ${apod.title}</h3>
             <p>${media}</h3>
             <p>${apod.explanation}</p>
-            </div>`,"lightblue");
+            </div>`,"lightyellow");
     });
 }
 
@@ -140,7 +162,7 @@ function movies(title) {
                     <img src='${movie.Poster}' height="100px" alt="">
                 </div>`;
         }
-        displayUpdate(`<div class="grid-item"> ${innerHTML} </div>`,"lightblue");
+        displayUpdate(`<div class="grid-item"> ${innerHTML} </div>`,"lightgreen");
     });
 }
 
