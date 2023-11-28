@@ -128,7 +128,7 @@ function NASA (date) {
         if (apod.media_type === 'image') 
             media = `<img src="${apod.hdurl}" height="100px" alt="">`;
         else
-            media = `<iframe width="960" height="540" src="${apod.url}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>`;
+            media = `<iframe width="180" height="90" src="${apod.url}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>`;
         displayUpdate(
             `<div class="grid-item">
             <h3>Date: ${apod.date}</h3>
