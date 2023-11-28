@@ -89,7 +89,7 @@ let map;
             `<div class="grid-item">
                 <h3>Date: ${niceTime(wx.dt, weather.timezone_offset)}</h3>
                 <p>Temp: ${KtoF(wx.temp)}</h3>
-                <p>Forecast: <img src='http://openweathermap.org/img/wn/${wx.weather[0].icon}@2x.png' alt=""> ${wx.weather[0].description}</p>
+                <p>Forecast: <img src='https://openweathermap.org/img/wn/${wx.weather[0].icon}@2x.png' alt=""> ${wx.weather[0].description}</p>
                 <p>Humidity ${wx.humidity}% Feels Like ${KtoF(wx.feels_like)}</p>
                 <p>Wind at ${wx.wind_speed} mph out of the ${wx.wind_deg}</p>
                 <p>Sunrise: ${niceTime(wx.sunrise, wx.timezone_offset)} / Sunset: ${niceTime(wx.sunset, wx.timezone_offset)}</p>
@@ -121,7 +121,7 @@ function NASA (date) {
 }
 
 function movies(title) {
-    let url = `http://www.omdbapi.com/?s=${title}&apikey=2c791b47`;
+    let url = `https://www.omdbapi.com/?s=${title}&apikey=2c791b47`;
 
     fetch(url)
     .then(response => response.json())
